@@ -3,6 +3,8 @@
 import React, {Component} from 'react';
 import {findDOMNode} from 'react-dom';
 
+const Chartist = require('chartist');
+
 class ChartistGraph extends Component {
 
   displayName: 'ChartistGraph'
@@ -21,11 +23,16 @@ class ChartistGraph extends Component {
     this.updateChart(newProps);
   }
 
+  shouldComponentUpdate(nextProps, nextStates) {
+    return nextProps != this.props;
+  }
+
   componentWillUnmount() {
     if (this.chartist) {
       try {
         this.chartist.detach();
-      } catch (err) {
+      }
+      catch (err) {
         throw new Error('Internal chartist error', err);
       }
     }
@@ -36,8 +43,6 @@ class ChartistGraph extends Component {
   }
 
   updateChart(config) {
-    let Chartist = require('chartist');
-
     let { type, data } = config;
     let options = config.options || {};
     let responsiveOptions = config.responsiveOptions || [];
@@ -45,7 +50,8 @@ class ChartistGraph extends Component {
 
     if (this.chartist) {
       this.chartist.update(data, options, responsiveOptions);
-    } else {
+    }
+    else {
       this.chartist = new Chartist[type](findDOMNode(this), data, options, responsiveOptions);
 
       if (config.listener) {
@@ -55,18 +61,17 @@ class ChartistGraph extends Component {
           }
         }
       }
-
     }
 
     return this.chartist;
   }
 
   render() {
-    const className = this.props.className ? ' ' + this.props.className : ''
+    const className = this.props.className ? ' ' + this.props.className : '';
     const style = this.props.style ? this.props.style : {};
-    return (<div className={'ct-chart' + className} style={style} />)
-  }
 
+    return (<div className={'ct-chart' + className} style={style}/>);
+  }
 }
 
 ChartistGraph.propTypes = {
@@ -75,6 +80,8 @@ ChartistGraph.propTypes = {
   className: React.PropTypes.string,
   options: React.PropTypes.object,
   responsiveOptions: React.PropTypes.array
-}
+};
 
-export default ChartistGraph;
+export const Graph = ChartistGraph;
+export const Interpolation = Chartist.Interpolation;
+export const Axis = Chartist.Axis;
